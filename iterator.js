@@ -9,6 +9,7 @@ function Iterator (db, options) {
   this.binding    = db.binding.iterator(options)
   this.cache      = null
   this.finished   = false
+  this.includeCache = options ? options.includeCache : false;
   this.fastFuture = fastFuture()
 }
 
@@ -27,6 +28,12 @@ Iterator.prototype._next = function (callback) {
     , value
 
   if (this.cache && this.cache.length) {
+    if (this.includeCache) {
+      var all = this.cache;
+      this.cache = null;
+      return callback(null, all);
+    }
+
     key   = this.cache.pop()
     value = this.cache.pop()
 
